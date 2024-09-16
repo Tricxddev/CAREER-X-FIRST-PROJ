@@ -141,6 +141,7 @@ app.get("/all_users",async(req,res)=>{
 //WORKOUT MANAGEMENT : RUNNING/JUGGING
 app.post("/run_jug_stat",async(req,res)=>{
 
+const {}=req.body
 
 
 
