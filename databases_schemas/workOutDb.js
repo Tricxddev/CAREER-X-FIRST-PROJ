@@ -1,4 +1,6 @@
+const { time } = require("console")
 const mongoose=require("mongoose")
+const { type } = require("os")
 
 const workOutSchema = new mongoose.Schema({
     workOutType:{type:String,required:true},
@@ -6,6 +8,15 @@ const workOutSchema = new mongoose.Schema({
     duration:{type:Number,required:true}
 },{timestamps:true})
 
-const workOutdb = new mongoose.model("workOutModel",workOutSchema)
+const workOutModel = new mongoose.model("workOutModel",workOutSchema)
 
-module.exports=workOutdb
+const excerciseSchema= new mongoose.Schema({
+    excerciseName:{type:String},
+    excerciseType:{type:String},
+    duration:{type:Number},
+    burnCalories:{type:String}
+})
+
+const   excerciseModel = new mongoose.model("excerciseModel",excerciseSchema)
+
+module.exports={workOutModel,excerciseModel}

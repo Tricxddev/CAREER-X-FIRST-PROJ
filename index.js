@@ -8,7 +8,7 @@ const jwt   = require("jsonwebtoken")
 const db_connect = require("./db")
 const  {validEmail,validateLogin,emailEntryVaildate} =require("./midleware/authValidation")
 const   {allUsers,userProfile} = require("./databases_schemas/usersDb")
-const workOutdb = require("./databases_schemas/workOutDb")
+const {workOutModel,excerciseModel} = require("./databases_schemas/workOutDb")
 
 dotenv.config()
 
@@ -141,8 +141,17 @@ app.get("/all_users",async(req,res)=>{
 //WORKOUT MANAGEMENT : RUNNING/JUGGING
 app.post("/run_jug_stat",async(req,res)=>{
 
-const {}=req.body
+const {workOutType,excercise,duration}=req.body
 
+const workOutDetails = new workOutModel({workOutType,excercise,duration,date:date()})
 
+workOutDetails.save()
+return res.status(200).json({
+    msg:"successful",
+    details:workOutDetails})
+});
+
+//WORKOUT CRUD: GET 
+app.get("/",(req,res)=>{
 
 })
