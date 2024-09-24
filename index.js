@@ -3,12 +3,15 @@ const dotenv = require("dotenv")
 const mongoose = require("mongoose")
 const   bcrypt = require("bcrypt")
 const jwt   = require("jsonwebtoken")
+const regRouter= require("./routes/userRegRoute")
+const loginRouter= require("./routes/userLoginRoute")
+const updateRouter= require("./routes/userUpdateRoute")
 
 //Required Dir
 const db_connect = require("./db")
-const  {validEmail,validateLogin,emailEntryVaildate} =require("./midleware/authValidation")
-const   {allUsers,userProfile} = require("./databases_schemas/usersDb")
-const {workOutModel,excerciseModel} = require("./databases_schemas/workOutDb")
+const  {authAccessTkn,validEmail,validateLogin,emailEntryVaildate} =require("./midleware/authValidation")
+const   {allUsers,userProfile} = require("./models/usersDb")
+const {workOutModel,excerciseModel} = require("./models/workOutDb")
 
 dotenv.config()
 
@@ -30,103 +33,49 @@ db_connect()
 app.get("/",(req,res)=>{
     res.json("JUST TESTING MY RESPONSE")
     console.log("POSTMAN SUCCESSFUL")
-})
-
-
-//New user API
-app.post("/userNew",emailEntryVaildate,async(req,res)=>{
-try{
-    
-    const {userFName, userLName, userAge, usergender, userMail, userPword, userPhone, userAddress}= req.body
-
-
-    const existingUser = await allUsers.findOne({userMail})
-    if(existingUser){
-        return res.status(400).json({msg:"This user already Exist"})
-    }
-
-    const userPlan = Math.floor(Math.random()*`${process.env.userPl}`)
-
-    const pwordhashed = await bcrypt.hash(userPword,12)
-
-    const   newUser = new allUsers({
-        userFName, 
-        userLName, 
-        userAge, 
-        usergender, 
-        userMail, 
-        userPword:pwordhashed, 
-        userPhone, 
-        userAddress,
-        userPlan
-    })
-    newUser.save()
-
-    return res.status(200).json({msg:"WELCOME ON BOARD",user:newUser})
-}
-catch(error){res.status(400).json({msg:error.message})}
-
-}
-)
-
+});
 
 app.post("/test",(req,res)=>{
 console.log(req.body)
-})
-
-//USER LOGIN
-app.post("/user_login",validateLogin,async(req,res)=>{
-try{
-const {userMail,userPword}= req.body
-
-const userDetails = await allUsers.findOne({userMail})
-
-if(!userDetails){
-    return res.status(200).json({msg:"USER NOT FOUND"})
-}
-
-const pwMatched = await bcrypt.compare(userPword,userDetails.userPword)
-if(!pwMatched){
-    return res.status(401).json({msg:"INVALID LOGIN DETAILS"})
-}
-const accessTKN= jwt.sign({userMail},`${process.env.Access_Token}`,{expiresIn:"10m"})
-const refreshTKN= jwt.sign({userMail},`${process.env.Refresh_Token}`,{expiresIn:"10m"})
-
-return res.status(200).json({
-    msg:"SUCCESSFUL LOGIN",
-    accessTKN,
-    userDetails,
-    Date:Date()
-
-})
-}catch(error){
-    return res.status(400).json({msg:error.message})}
-
-})
+});
 
 //update Profile
-app.patch("/update_profile/:id",async(req,res)=>{
+app.put("/update_profile/:id",authAccessTkn,async(req,res)=>{
 try{
     const {id}=req.params
     const {userFName,userLName,userMail,
-        userAge,usergender,userPhone,userFitnessGoals,userPlan,userAddress}=req.body
+        userAge,usergender,userPhone,userFitnessGoals,userAddress}=req.body
   
-// const findId = await allUsers.findOne({id})
-// if(!findId){
-//     return res.status(400).json({msg:"UNKNOWN USER"})
-// }
-    const ProfileUpdate = await allUsers.findByIdAndUpdate(
+    const allUsersUpdate = await allUsers.findByIdAndUpdate(
     id,
     {userFName,userLName,userMail,userPhone,
-    userAge,usergender,userPhone,userFitnessGoals,userPlan,userAddress},
+    userAge,usergender,userPhone,userAddress},
     {new:true})
+
+    const newUserProfileUpdate = await userProfile.findOneAndUpdate(
+        {userId:id},
+        {userAge,usergender,userFitnessGoals},
+        {new:true}
+    )
+    err=[]
+    if(!allUsersUpdate){
+        err.push("USER DB NOT UPDTATED")
+    }
+    if(!newUserProfileUpdate){
+        err.push("USER PROFILE NOT UPDTATED")
+    }
+    if(err.length>0){
+        return res.status(400).json({msg:err})
+    };
+    
 
     return res.status(200).json({
         msg:"SUCCESSFUL",
-        user:ProfileUpdate})
+        user:allUsersUpdate,
+        newUserProfileUpdate
+    })
 }catch(error){
-    return res.status(400).json({msg:error.message})
-}
+    return res.status(400).json({msg:error.message})}
    
 })
 
@@ -155,3 +104,11 @@ return res.status(200).json({
 app.get("/",(req,res)=>{
 
 })
+//USER REGISTRATION
+app.use("/API",regRouter);
+
+//USER LOGIN
+app.use("/API",loginRouter)
+
+//USER UPDATE
+app.use("/API",updateRouter)
