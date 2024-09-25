@@ -12,6 +12,7 @@ const db_connect = require("./db")
 const  {authAccessTkn,validEmail,validateLogin,emailEntryVaildate} =require("./midleware/authValidation")
 const   {allUsers,userProfile} = require("./models/usersDb")
 const {workOutModel,excerciseModel} = require("./models/workOutDb")
+const { error } = require("console")
 
 dotenv.config()
 
@@ -39,45 +40,6 @@ app.post("/test",(req,res)=>{
 console.log(req.body)
 });
 
-//update Profile
-app.put("/update_profile/:id",authAccessTkn,async(req,res)=>{
-try{
-    const {id}=req.params
-    const {userFName,userLName,userMail,
-        userAge,usergender,userPhone,userFitnessGoals,userAddress}=req.body
-  
-    const allUsersUpdate = await allUsers.findByIdAndUpdate(
-    id,
-    {userFName,userLName,userMail,userPhone,
-    userAge,usergender,userPhone,userAddress},
-    {new:true})
-
-    const newUserProfileUpdate = await userProfile.findOneAndUpdate(
-        {userId:id},
-        {userAge,usergender,userFitnessGoals},
-        {new:true}
-    )
-    err=[]
-    if(!allUsersUpdate){
-        err.push("USER DB NOT UPDTATED")
-    }
-    if(!newUserProfileUpdate){
-        err.push("USER PROFILE NOT UPDTATED")
-    }
-    if(err.length>0){
-        return res.status(400).json({msg:err})
-    };
-    
-
-    return res.status(200).json({
-        msg:"SUCCESSFUL",
-        user:allUsersUpdate,
-        newUserProfileUpdate
-    })
-}catch(error){
-    return res.status(400).json({msg:error.message})}
-   
-})
 
 //GET ALL USER
 app.get("/all_users",async(req,res)=>{
@@ -87,18 +49,112 @@ app.get("/all_users",async(req,res)=>{
     }
 })
 
-//WORKOUT MANAGEMENT : RUNNING/JUGGING
-app.post("/run_jug_stat",async(req,res)=>{
-
-const {workOutType,excercise,duration}=req.body
-
-const workOutDetails = new workOutModel({workOutType,excercise,duration,date:date()})
-
-workOutDetails.save()
-return res.status(200).json({
-    msg:"successful",
-    details:workOutDetails})
+//WORKOUT MANAGEMENT :create
+app.post("/workOuts_cat/:id",async(req,res)=>{
+const {id}=req.params
+const {workOutName,exercise,duration}=req.body
+try{const idExist = await allUsers.findById(id)
+    if(!idExist){
+        return  res.status(400).json({msg:"USER ID REQUIRED FOR THIS REQUEST"})
+    }
+    const workOutDetails = new workOutModel({
+        userID:id,
+        workOutName,
+        exercise,
+        duration,
+        date:new Date()})
+    
+   await workOutDetails.save();
+    return res.status(200).json({
+        msg:"successful",
+        details:workOutDetails})
+    }catch(error){
+    return res.status(400).json({msg:error.message})}
 });
+
+
+//WORKOUT MANAGEMENT :update
+app.put("/workOuts_cat_update/:id",async(req,res)=>{
+    const {id}=req.params
+    const {workOutName,exercise,duration}=req.body
+    try{
+        const newworkOutDetails = await workOutModel.findOneAndUpdate(
+            {userID:id},{workOutName,exercise,duration},{new:true})
+            
+        if(!newworkOutDetails)
+            {return  res.status(400).json({msg:"USER ID REQUIRED FOR THIS REQUEST"})}
+
+        return res.status(200).json({
+            msg:"SUCCESSFUL",
+            newworkOutDetails})
+
+    }catch(error){
+        return res.status(400).json({msg:error.message})
+    }
+
+})
+//WORKOUT MANAGEMENT :delete
+app.delete("/workOuts_cat_delete/:id",authAccessTkn,async(req,res)=>{
+    const {id}=req.params
+    try{
+
+        const delworkOutDetails = await workOutModel.findOneAndDelete(
+            {userID:id})
+
+        if(!delworkOutDetails)
+            {return  res.status(400).json({msg:"USER ID REQUIRED FOR THIS REQUEST"})}
+
+        return res.status(200).json({
+            msg:"SUCCESSFUL"})
+
+    }catch(error){
+        return res.status(400).json({msg:error.message})
+    }
+
+})
+
+
+//EXERCISE MANAGEMENT: create
+app.post("/exercise_cat/:id",async(req,res)=>{
+    const {id}=req.params
+    const {excerciseName,exerciseType,duration,burnedCalories}=req.body
+    const findId= await allUsers.findById(id)
+    if(!findId){
+        return  res.status(400).json("USER ID REQUIRED")
+    }
+    const newExercise = new excerciseModel({
+        userID:id,
+        excerciseName,
+        exerciseType,
+        duration,
+        burnedCalories})
+    await   newExercise.save()
+
+    return  res.status(200).json({
+        msg:"SUCCESSFUL",
+        newExercise})
+});
+
+//EXERCISE MANAGEMENT: update
+app.put("/exercise_update_cat/:id",authAccessTkn,async(req,res)=>{
+    const {id}=req.params
+    const {excerciseName,exerciseType,duration,burnedCalories}=req.body
+    const findToUpdt = await excerciseModel.findOneAndUpdate(
+        {userID:id},
+        {excerciseName,exerciseType,duration,burnedCalories},
+        {new:true})
+    if(!findToUpdt){
+        return res.status(400).json("USER ID NOT FOUND")
+    }
+
+    return res.status(200).json({msg:"SUCCESSFUL",findToUpdt})
+
+})
+
+//EXERCISE MANAGEMENT: delete
+app.delete("/exercise_delete_cat/:id",async(res,req)=>{
+    
+})
 
 //WORKOUT CRUD: GET 
 app.get("/",(req,res)=>{

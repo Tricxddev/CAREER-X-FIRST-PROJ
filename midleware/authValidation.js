@@ -66,7 +66,8 @@ const authAccessTkn = async(req,res,next)=>{
      if(!accessTKN){
           return  res.status(400).json('TOKEN NOT IN RIGHT FORMATTED')
      }
-     try{const verifyTkn = await jwt.verify(accessTKN,process.env.Access_Token)
+     try{
+          const verifyTkn = await jwt.verify(accessTKN,process.env.Access_Token)
           req.user = verifyTkn
  
           next()
