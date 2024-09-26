@@ -237,9 +237,44 @@ app.put("/nutrition_updatemeal/:id",async (req,res) =>{
 
 })
 
-//NUTRITIONAL MANAGEMENT PLAN: updatemeal
+//NUTRITIONAL MANAGEMENT PLAN: deleteMeal
+app.delete("/nutrition_deleteMeal/:id",async(req,res)=>{
+    try{
+        const{id}=req.params
+    const delIdMeal = await userMealPlan.findOneAndDelete({userID:id})
+    if(!delIdMeal){
+        return res.status(400).json("ID REQUIRED FOR THIS ACTION")
+    }
+    return res.status(200).json({
+        msg:"SUCCESSFUL"})
+    }catch(error){
+        return res.status(400).json({msg:error.message})
+    }
+    
+    
+})
 
+//NUTRITIONAL MANAGEMENT PLAN: caloryTrack
+app.get("/nutrition_caloryTrack/:id/:date",async(req,res)=>{
+    const{id,date}=req.params
+    const trkCalories = await userMealPlan.find({userID:id})
+    if(!trkCalories){
+        return res.status(400).json("ID REQUIRED FOR THIS ACTION")
+    }
+    if(!trkCalories.length===0){
+        return res.status(400).json({msg:"NO RECORDED MEAL FOR THIS USER"})
+    }
 
+    caloryArray=[]
+
+    trkCalories.forEach((userMeal) => {
+        if (userMeal.nutritionalInfo.calories) {
+            caloryArray.push(userMeal.nutritionalInfo.calories)}});
+        totalCalories = caloryArray.reduce((total,calories)=>total + calories,0)    
+        return res.status(200).json({
+            msg:"SUCCESSFUL",
+            totalCalories})
+})
 
 //USER REGISTRATION
 app.use("/API",regRouter);
