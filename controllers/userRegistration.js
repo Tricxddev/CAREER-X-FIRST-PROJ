@@ -1,5 +1,5 @@
 const   {allUsers,userProfile} = require("../models/usersDb")
-const {workOutModel,excerciseModel} = require("../models/workOutDb")
+const {workOutModel,excerciseModel} = require("../models/workOutDb.js")
 const   bcrypt = require("bcrypt")
 
 

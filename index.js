@@ -6,12 +6,16 @@ const jwt   = require("jsonwebtoken")
 const regRouter= require("./routes/userRegRoute")
 const loginRouter= require("./routes/userLoginRoute")
 const updateRouter= require("./routes/userUpdateRoute")
+const workOutCreatn=require("./routes/workOutRoute")
+const workUpdatn=require("./routes/workUpdateRoute")
+const workdeltn=require("./routes/workOutDelRoute.js")
+const nutAddMeal=require("./routes/nut_addMealRoute.js")
 
 //Required Dir
 const db_connect = require("./db")
 const  {authAccessTkn,validEmail,validateLogin,emailEntryVaildate} =require("./midleware/authValidation")
 const   {allUsers,userProfile} = require("./models/usersDb")
-const {workOutModel,excerciseModel,userMealPlan} = require("./models/workOutDb")
+const {workOutModel,excerciseModel,userMealPlan} = require("./models/workOutDb.js")
 const { error } = require("console")
 
 dotenv.config()
@@ -49,7 +53,7 @@ app.get("/all_users",async(req,res)=>{
     }
 })
 
-//WORKOUT MANAGEMENT :create
+//WORKOUT MANAGEMENT :create-DONE
 app.post("/workOuts_cat/:id",async(req,res)=>{
 try{const idExist = await allUsers.findById(id)
     const {id}=req.params
@@ -73,7 +77,7 @@ try{const idExist = await allUsers.findById(id)
 });
 
 
-//WORKOUT MANAGEMENT :update
+//WORKOUT MANAGEMENT :update-DONE
 app.put("/workOuts_cat_update/:id",async(req,res)=>{
     const {id}=req.params
     const {workOutName,exercise,duration}=req.body
@@ -93,7 +97,7 @@ app.put("/workOuts_cat_update/:id",async(req,res)=>{
     }
 
 })
-//WORKOUT MANAGEMENT :delete
+//WORKOUT MANAGEMENT :delete-DONE
 app.delete("/workOuts_cat_delete/:id",authAccessTkn,async(req,res)=>{
     try{
         const {id}=req.params
@@ -113,7 +117,7 @@ app.delete("/workOuts_cat_delete/:id",authAccessTkn,async(req,res)=>{
 })
 
 
-//EXERCISE MANAGEMENT: create
+//EXERCISE MANAGEMENT: create-done
 app.post("/exercise_cat/:id",async(req,res)=>{
     try{
     const {id}=req.params
@@ -136,7 +140,7 @@ app.post("/exercise_cat/:id",async(req,res)=>{
     
 });
 
-//EXERCISE MANAGEMENT: update
+//EXERCISE MANAGEMENT: update-DONE
 app.put("/exercise_update_cat/:id",authAccessTkn,async(req,res)=>{
     try{
     const {id}=req.params
@@ -158,7 +162,7 @@ app.put("/exercise_update_cat/:id",authAccessTkn,async(req,res)=>{
     
 })
 
-//EXERCISE MANAGEMENT: delete
+//EXERCISE MANAGEMENT: delete-done
 app.delete("/exercise_delete_cat/:id",authAccessTkn,async(req,res)=>{
     try{
     const {id}=req.params
@@ -172,7 +176,7 @@ app.delete("/exercise_delete_cat/:id",authAccessTkn,async(req,res)=>{
         return res.status(400).json({msg:error.message})}
 })
 
-//NUTRITIONAL MANAGEMENT PLAN: add_meal
+//NUTRITIONAL MANAGEMENT PLAN: add_meal-done
 app.post("/nutrition_add_meal/:id",async(req,res)=>{
     try{
     const {id}= req.params
@@ -285,3 +289,15 @@ app.use("/API",loginRouter)
 
 //USER UPDATE
 app.use("/API",updateRouter)
+
+//WORKOUT MANAGEMENT :create
+app.use("/API",workOutCreatn)
+
+//WORKOUT MANAGEMENT :update
+app.use("/API",workUpdatn)
+
+//EXERCISE MANAGEMENT: delete
+app.use("/API",workdeltn)
+
+//NUTRITIONAL MANAGEMENT PLAN: add_meal
+app.use("/API",nutAddMeal)
