@@ -51,9 +51,9 @@ app.get("/all_users",async(req,res)=>{
 
 //WORKOUT MANAGEMENT :create
 app.post("/workOuts_cat/:id",async(req,res)=>{
-const {id}=req.params
-const {workOutName,exercise,duration}=req.body
 try{const idExist = await allUsers.findById(id)
+    const {id}=req.params
+    const {workOutName,exercise,duration}=req.body
     if(!idExist){
         return  res.status(400).json({msg:"USER ID REQUIRED FOR THIS REQUEST"})
     }
@@ -95,9 +95,8 @@ app.put("/workOuts_cat_update/:id",async(req,res)=>{
 })
 //WORKOUT MANAGEMENT :delete
 app.delete("/workOuts_cat_delete/:id",authAccessTkn,async(req,res)=>{
-    const {id}=req.params
     try{
-
+        const {id}=req.params
         const delworkOutDetails = await workOutModel.findOneAndDelete(
             {userID:id})
 
@@ -116,12 +115,12 @@ app.delete("/workOuts_cat_delete/:id",authAccessTkn,async(req,res)=>{
 
 //EXERCISE MANAGEMENT: create
 app.post("/exercise_cat/:id",async(req,res)=>{
+    try{
     const {id}=req.params
     const {excerciseName,exerciseType,duration,burnedCalories}=req.body
     const findId= await allUsers.findById(id)
     if(!findId){
-        return  res.status(400).json("USER ID REQUIRED")
-    }
+        return  res.status(400).json("USER ID REQUIRED")}
     const newExercise = new excerciseModel({
         userID:id,
         excerciseName,
@@ -133,22 +132,30 @@ app.post("/exercise_cat/:id",async(req,res)=>{
     return  res.status(200).json({
         msg:"SUCCESSFUL",
         newExercise})
+    }catch(error){return res.status(400).json({msg:error.message})}
+    
 });
 
 //EXERCISE MANAGEMENT: update
 app.put("/exercise_update_cat/:id",authAccessTkn,async(req,res)=>{
+    try{
     const {id}=req.params
     const {excerciseName,exerciseType,duration,burnedCalories}=req.body
     const findToUpdt = await excerciseModel.findOneAndUpdate(
         {userID:id},
-        {excerciseName,exerciseType,duration,burnedCalories},
+        {excerciseName,
+        exerciseType,
+        duration,
+        burnedCalories},
         {new:true})
     if(!findToUpdt){
         return res.status(400).json("USER ID NOT FOUND")
     }
-
-    return res.status(200).json({msg:"SUCCESSFUL",findToUpdt})
-
+    return res.status(200).json({
+        msg:"SUCCESSFUL",
+        findToUpdt})
+    }catch(error){return res.status(400).json({msg:error.message})}
+    
 })
 
 //EXERCISE MANAGEMENT: delete
@@ -163,14 +170,12 @@ app.delete("/exercise_delete_cat/:id",authAccessTkn,async(req,res)=>{
 
     }catch(error){
         return res.status(400).json({msg:error.message})}
-    
-
 })
 
 //NUTRITIONAL MANAGEMENT PLAN: add_meal
 app.post("/nutrition_add_meal/:id",async(req,res)=>{
     try{
-        const {id}= req.params
+    const {id}= req.params
     const{mealName,ingredient,calories,protein,carbs,fats}=req.body
     const idExist = await allUsers.findById(id)
     if(!idExist){
@@ -208,9 +213,7 @@ app.get("/nutrition_all_meal_day_wise/:id/:date",async(req,res)=>{
         return res.status(400).json({
             msg:"SUCCESSFUL",
             findID})
-    }catch(error){
-        return res.status(400).json({msg:error.message})
-    }
+    }catch(error){return res.status(400).json({msg:error.message})}
 })
 
 //NUTRITIONAL MANAGEMENT PLAN: updatemeal
@@ -231,10 +234,7 @@ app.put("/nutrition_updatemeal/:id",async (req,res) =>{
         return res.status(200).json({
             msg:"SUCCESSFUL",
             findIdMealUpdt})
-    }catch(error){
-        return res.status(400).json({msg:error.message})
-    }
-
+    }catch(error){return res.status(400).json({msg:error.message})}
 })
 
 //NUTRITIONAL MANAGEMENT PLAN: deleteMeal
@@ -256,7 +256,8 @@ app.delete("/nutrition_deleteMeal/:id",async(req,res)=>{
 
 //NUTRITIONAL MANAGEMENT PLAN: caloryTrack
 app.get("/nutrition_caloryTrack/:id/:date",async(req,res)=>{
-    const{id,date}=req.params
+    try{
+        const{id,date}=req.params
     const trkCalories = await userMealPlan.find({userID:id})
     if(!trkCalories){
         return res.status(400).json("ID REQUIRED FOR THIS ACTION")
@@ -273,7 +274,7 @@ app.get("/nutrition_caloryTrack/:id/:date",async(req,res)=>{
         totalCalories = caloryArray.reduce((total,calories)=>total + calories,0)    
         return res.status(200).json({
             msg:"SUCCESSFUL",
-            totalCalories})
+            totalCalories})}catch(error){return res.status(400).json({msg:error.message})}
 })
 
 //USER REGISTRATION
