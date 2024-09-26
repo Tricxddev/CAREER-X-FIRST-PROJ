@@ -11,7 +11,7 @@ const updateRouter= require("./routes/userUpdateRoute")
 const db_connect = require("./db")
 const  {authAccessTkn,validEmail,validateLogin,emailEntryVaildate} =require("./midleware/authValidation")
 const   {allUsers,userProfile} = require("./models/usersDb")
-const {workOutModel,excerciseModel} = require("./models/workOutDb")
+const {workOutModel,excerciseModel,userNutritionModel} = require("./models/workOutDb")
 const { error } = require("console")
 
 dotenv.config()
@@ -152,14 +152,25 @@ app.put("/exercise_update_cat/:id",authAccessTkn,async(req,res)=>{
 })
 
 //EXERCISE MANAGEMENT: delete
-app.delete("/exercise_delete_cat/:id",async(res,req)=>{
+app.delete("/exercise_delete_cat/:id",authAccessTkn,async(req,res)=>{
+    try{
+    const {id}=req.params
+    const delExercisedata = await  excerciseModel.findOneAndDelete({userID:id})
+    if(!delExercisedata){
+        return res.status(400).json("USER ID REQUIRED")
+    }
+    return res.status(200).json({msg:"SUCCESSFUL"})
+
+    }catch(error){
+        return res.status(400).json({msg:error.message})}
     
-})
-
-//WORKOUT CRUD: GET 
-app.get("/",(req,res)=>{
 
 })
+
+//NUTRITIONAL MANAGEMENT PLAN
+
+
+
 //USER REGISTRATION
 app.use("/API",regRouter);
 
