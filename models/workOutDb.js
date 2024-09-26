@@ -23,16 +23,15 @@ const   excerciseModel = new mongoose.model("excerciseModel",excerciseSchema)
 
 const   userNutritionSchema = new mongoose.Schema({
     userID:{type:mongoose.Schema.Types.ObjectId,ref:'allUsers',required:true},
-    mealName:{type:String},
-    ingredient:{type:[String]},
+    mealName:{type:String,required:true},
+    ingredient:[{type:String,required:true}],
     nutritionalInfo:{
-        calories:{type:String},
-        protien:{type:String},
-        carbs:{type:String},
-        fats:{type:String}
-    }
-})
+        calories:{type:Number,required:true},
+        protein:{type:Number,required:true},
+        carbs:{type:Number,required:true},
+        fats:{type:Number,required:true}
+    }}, {timestamps:true})
 
-const userNutritionModel = new mongoose.Model("userNutritionModel",userNutritionSchema)
+const userMealPlan = new mongoose.model("userMealPlan",userNutritionSchema)
 
-module.exports={workOutModel,excerciseModel,userNutritionModel}
+module.exports={workOutModel,excerciseModel,userMealPlan}

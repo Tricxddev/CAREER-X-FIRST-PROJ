@@ -11,7 +11,7 @@ const updateRouter= require("./routes/userUpdateRoute")
 const db_connect = require("./db")
 const  {authAccessTkn,validEmail,validateLogin,emailEntryVaildate} =require("./midleware/authValidation")
 const   {allUsers,userProfile} = require("./models/usersDb")
-const {workOutModel,excerciseModel,userNutritionModel} = require("./models/workOutDb")
+const {workOutModel,excerciseModel,userMealPlan} = require("./models/workOutDb")
 const { error } = require("console")
 
 dotenv.config()
@@ -167,7 +167,77 @@ app.delete("/exercise_delete_cat/:id",authAccessTkn,async(req,res)=>{
 
 })
 
-//NUTRITIONAL MANAGEMENT PLAN
+//NUTRITIONAL MANAGEMENT PLAN: add_meal
+app.post("/nutrition_add_meal/:id",async(req,res)=>{
+    try{
+        const {id}= req.params
+    const{mealName,ingredient,calories,protein,carbs,fats}=req.body
+    const idExist = await allUsers.findById(id)
+    if(!idExist){
+        return res.status(400).json("USER ID REQUIRED")
+    }
+    const newMealplan = new userMealPlan({
+        userID:id,
+        mealName,
+        ingredient,
+        nutritionalInfo:{
+            calories:Number(calories),
+            protein:Number(protein),
+            carbs:Number(carbs),
+            fats:Number(fats)
+        },
+        mealDate: new Date()})
+    await newMealplan.save()
+    return res.status(200).json({
+        msg:"SUCCESSFUL",
+        newMealplan})
+    }catch(error){
+        return res.status(400).json({msg:error.message})
+    }
+    
+})
+
+//NUTRITIONAL MANAGEMENT PLAN: all_meal_day_wise
+app.get("/nutrition_all_meal_day_wise/:id/:date",async(req,res)=>{
+    try{    
+        const {id,date}=req.params
+        findID = await  userMealPlan.find({userID:id})
+        if(!findID ||findID.length===0 ){
+            return res.status(400).json("ID REQUIRED OR NO MEAL FOR THIS ID")
+        }
+        return res.status(400).json({
+            msg:"SUCCESSFUL",
+            findID})
+    }catch(error){
+        return res.status(400).json({msg:error.message})
+    }
+})
+
+//NUTRITIONAL MANAGEMENT PLAN: updatemeal
+app.put("/nutrition_updatemeal/:id",async (req,res) =>{
+    try{
+        const {id}= req.params
+        const{mealName,ingredient,calories,protein,carbs,fats}=req.body
+        const findIdMealUpdt = await userMealPlan.findOneAndUpdate({
+            userID:id},{
+            mealName,
+            ingredient,
+                calories:Number(calories),
+                protein:Number(protein),
+                carbs:Number(carbs),
+                fats:Number(fats)},
+                {new:true}
+            )
+        return res.status(200).json({
+            msg:"SUCCESSFUL",
+            findIdMealUpdt})
+    }catch(error){
+        return res.status(400).json({msg:error.message})
+    }
+
+})
+
+//NUTRITIONAL MANAGEMENT PLAN: updatemeal
 
 
 
