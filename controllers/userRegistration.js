@@ -1,6 +1,7 @@
 const { json } = require("stream/consumers");
 const   {allUsers,userProfile} = require("../models/usersDb")
 const   bcrypt = require("bcrypt")
+const replyUser=require("../midleware/mailSend_Reply")
 
 const userRegFxn = async(req,res)=>{
     try{
@@ -9,7 +10,7 @@ const userRegFxn = async(req,res)=>{
             userAddress,userFitnessGoals}= req.body    
     
         const existingUser = await allUsers.findOne({userMail})
-        if(!existingUser ||existingUser==='' ){
+        if(existingUser==='' ){
             return  res.status(401).json({msg:"FIELD CAN NOT BE NULL"})
         }
         if(existingUser){
@@ -19,7 +20,9 @@ const userRegFxn = async(req,res)=>{
         const userPlan = Math.floor(Math.random()*`${process.env.userPl}`)
     
         const pwordhashed = await bcrypt.hash(userPword,12)
-    
+
+
+
         const   newUser = new allUsers({
             userFName, 
             userLName, 
@@ -31,6 +34,7 @@ const userRegFxn = async(req,res)=>{
             userAddress,
             userPlan
         })
+
         await newUser.save();
         const userId =  newUser._id;
         const newUserProfile = new userProfile({
@@ -40,7 +44,9 @@ const userRegFxn = async(req,res)=>{
             userFitnessGoals
         });       
         await newUserProfile.save()
-    
+
+        await replyUser(userMail)
+
         return res.status(200).json({
             msg:"SUCCESSFUL",
             userProfile:{
