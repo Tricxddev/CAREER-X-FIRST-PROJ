@@ -18,6 +18,7 @@ const nutUpdtMeal=require("./routes/nut_updtMealRoute.js")
 const nutdelMeal=require("./routes/nut_DelMEalRoute.js")
 const nutMealTrk=require("./routes/nut_MealTrkRoute.js")
 const allUserReq=require("./routes/allUserReqRoute.js")
+const emptyReq=require("./routes/emptyReqRoute.js")
 
 
 //Required Dir
@@ -44,10 +45,10 @@ console.log(`This server now runs on PORT:${PORT}`)
 db_connect()
 
 // TESTING RESPONSE
-app.get("/",(req,res)=>{
-    res.json("JUST TESTING MY RESPONSE")
-    console.log("POSTMAN SUCCESSFUL")
-});
+// app.get("/",(req,res)=>{
+//     res.json("JUST TESTING MY RESPONSE")
+//     console.log("POSTMAN SUCCESSFUL")
+// });
 
 app.post("/test",(req,res)=>{
 console.log(req.body)
@@ -99,3 +100,6 @@ app.use("/API",nutdelMeal)
 
 //NUTRITIONAL MANAGEMENT PLAN: caloryTrack
 app.use("/API",nutMealTrk)
+
+//Handle unwanted request
+app.use(emptyReq)
