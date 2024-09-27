@@ -10,6 +10,11 @@ const workOutCreatn=require("./routes/workOutRoute")
 const workUpdatn=require("./routes/workUpdateRoute")
 const workdeltn=require("./routes/workOutDelRoute.js")
 const nutAddMeal=require("./routes/nut_addMealRoute.js")
+const nutGetAllMeal=require("./routes/nut_GetAllMealRoute.js")
+const nutUpdtMeal=require("./routes/nut_updtMealRoute.js")
+const nutdelMeal=require("./routes/nut_DelMEalRoute.js")
+const nutMealTrk=require("./routes/nut_MealTrkRoute.js")
+
 
 //Required Dir
 const db_connect = require("./db")
@@ -206,7 +211,7 @@ app.post("/nutrition_add_meal/:id",async(req,res)=>{
     
 })
 
-//NUTRITIONAL MANAGEMENT PLAN: all_meal_day_wise
+//NUTRITIONAL MANAGEMENT PLAN: all_meal_day_wise-done
 app.get("/nutrition_all_meal_day_wise/:id/:date",async(req,res)=>{
     try{    
         const {id,date}=req.params
@@ -220,7 +225,7 @@ app.get("/nutrition_all_meal_day_wise/:id/:date",async(req,res)=>{
     }catch(error){return res.status(400).json({msg:error.message})}
 })
 
-//NUTRITIONAL MANAGEMENT PLAN: updatemeal
+//NUTRITIONAL MANAGEMENT PLAN: updatemeal-done
 app.put("/nutrition_updatemeal/:id",async (req,res) =>{
     try{
         const {id}= req.params
@@ -241,7 +246,7 @@ app.put("/nutrition_updatemeal/:id",async (req,res) =>{
     }catch(error){return res.status(400).json({msg:error.message})}
 })
 
-//NUTRITIONAL MANAGEMENT PLAN: deleteMeal
+//NUTRITIONAL MANAGEMENT PLAN: deleteMeal-done
 app.delete("/nutrition_deleteMeal/:id",async(req,res)=>{
     try{
         const{id}=req.params
@@ -254,11 +259,9 @@ app.delete("/nutrition_deleteMeal/:id",async(req,res)=>{
     }catch(error){
         return res.status(400).json({msg:error.message})
     }
-    
-    
 })
 
-//NUTRITIONAL MANAGEMENT PLAN: caloryTrack
+//NUTRITIONAL MANAGEMENT PLAN: caloryTrack-done
 app.get("/nutrition_caloryTrack/:id/:date",async(req,res)=>{
     try{
         const{id,date}=req.params
@@ -301,3 +304,15 @@ app.use("/API",workdeltn)
 
 //NUTRITIONAL MANAGEMENT PLAN: add_meal
 app.use("/API",nutAddMeal)
+
+//NUTRITIONAL MANAGEMENT PLAN: all_meal_day_wise
+app.use("/API",nutGetAllMeal)
+
+//NUTRITIONAL MANAGEMENT PLAN: updatemeal
+app.use("/API",nutUpdtMeal)
+
+//NUTRITIONAL MANAGEMENT PLAN: deleteMeal
+app.use("/API",nutdelMeal)
+
+//NUTRITIONAL MANAGEMENT PLAN: caloryTrack
+app.use("API",nutMealTrk)
