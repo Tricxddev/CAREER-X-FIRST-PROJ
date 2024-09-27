@@ -1,7 +1,6 @@
-const   {allUsers,userProfile} = require("../models/usersDb")
-const {workOutModel,excerciseModel} = require("../models/workOutDb.js")
-const   bcrypt = require("bcrypt")
-const jwt   = require("jsonwebtoken")
+const {allUsers} = require("../models/usersDb")
+const bcrypt = require("bcrypt")
+const jwt = require("jsonwebtoken")
 
 
 const userLoginFxn = async(req,res)=>{
@@ -22,15 +21,13 @@ const userLoginFxn = async(req,res)=>{
     const refreshTKN= jwt.sign({userMail},`${process.env.Refresh_Token}`,{expiresIn:"10m"})
     
     return res.status(200).json({
-        msg:"SUCCESSFUL LOGIN",
+        msg:"SUCCESSFUL",
         accessTKN,
         userDetails,
         Date:Date()
-    
-    })
+    });
     }catch(error){
         return res.status(400).json({msg:error.message})}
-    
-    }
+    };
 
     module.exports = userLoginFxn

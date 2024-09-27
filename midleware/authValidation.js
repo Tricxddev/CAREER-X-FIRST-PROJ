@@ -43,7 +43,7 @@ const validateLogin = async(req,res,next)=>{
     const {userMail,userPword}= req.body
     const err=[]
     if(!userMail || !userPword){
-         err.push("PLEASE ENTER CORRECT CREDENTIALS")
+         err.push("ACCESS DENIED")
     }else if(!validEmail(userMail)){
          err.push("WRONG EMAIL FORMAT ENTERED")
     }
@@ -51,15 +51,14 @@ const validateLogin = async(req,res,next)=>{
         return res.status(400).json({msg:err})
     }
     next()
-}
+};
 
 //jwt auth middleware
-
 
 const authAccessTkn = async(req,res,next)=>{
      const headerExist = req.header('Authorization')
      if(!headerExist){
-          return  res.status(400).json({msg:"TOKEN NOT IN HEADER"})
+          return  res.status(400).json({msg:"TOKEN REQUIRED"})
      }
      const accessTKN =headerExist.split(' ')[1]
 
@@ -74,7 +73,7 @@ const authAccessTkn = async(req,res,next)=>{
      }catch(error){
           return res.status(400).json({msg:error.message})
      }
-     }
+     };
 
 
 // Validate Email With Regex

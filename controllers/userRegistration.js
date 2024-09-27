@@ -1,19 +1,19 @@
+const { json } = require("stream/consumers");
 const   {allUsers,userProfile} = require("../models/usersDb")
-const {workOutModel,excerciseModel} = require("../models/workOutDb.js")
 const   bcrypt = require("bcrypt")
-
-
 
 const userRegFxn = async(req,res)=>{
     try{
-        
         const {userFName, userLName, userAge, 
             usergender, userMail, userPword, userPhone, 
             userAddress,userFitnessGoals}= req.body    
     
         const existingUser = await allUsers.findOne({userMail})
+        if(!existingUser ||existingUser==='' ){
+            return  res.status(401).json({msg:"FIELD CAN NOT BE NULL"})
+        }
         if(existingUser){
-            return res.status(400).json({msg:"This user already Exist"})
+            return res.status(400).json({msg:"EXISTING USER"})
         }
     
         const userPlan = Math.floor(Math.random()*`${process.env.userPl}`)
@@ -41,7 +41,11 @@ const userRegFxn = async(req,res)=>{
         });       
         await newUserProfile.save()
     
-        return res.status(200).json({msg:"WELCOME ON BOARD",userProfile:{newUser,newUserProfile}})
+        return res.status(200).json({
+            msg:"SUCCESSFUL",
+            userProfile:{
+                newUser,
+                newUserProfile}});
     }
     catch(error){res.status(400).json({msg:error.message})}
     

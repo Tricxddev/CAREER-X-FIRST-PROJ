@@ -1,9 +1,9 @@
-const workOutDelFxn = require("../controllers/workOutDel")
+const allUserReqFxn = require("../controllers/allUserReq")
 const express = require("express")
 const { route } = require("./userRegRoute")
 const { Module } = require("module")
 const router = express.Router()
 
-router.delete("/workOuts_cat_delete/:id",workOutDelFxn)
+router.get("/all_users",allUserReqFxn)
 
 module.exports=router

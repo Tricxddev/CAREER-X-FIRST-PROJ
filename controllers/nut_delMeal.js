@@ -6,8 +6,8 @@ const nut_DelMealFxn=async(req,res)=>{
     try{
         const{id}=req.params
     const delIdMeal = await userMealPlan.findOneAndDelete({userID:id})
-    if(!delIdMeal){
-        return res.status(400).json("ID REQUIRED FOR THIS ACTION")
+    if(!delIdMeal || delIdMeal===''){
+        return res.status(401).json("ID REQUIRED FOR THIS ACTION")
     }
     return res.status(200).json({
         msg:"SUCCESSFUL"})

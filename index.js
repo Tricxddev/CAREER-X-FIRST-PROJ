@@ -7,13 +7,17 @@ const regRouter= require("./routes/userRegRoute")
 const loginRouter= require("./routes/userLoginRoute")
 const updateRouter= require("./routes/userUpdateRoute")
 const workOutCreatn=require("./routes/workOutRoute")
-const workUpdatn=require("./routes/workUpdateRoute")
-const workdeltn=require("./routes/workOutDelRoute.js")
+const workOutUpdate=require("./routes/workOutUpdateRoute.js")
+const workOutDeltn=require("./routes/workOutDelRoute.js")
+const exerciseUpdatn=require("./routes/exerciseUpdateRoute.js")
+const exerciseCrtn=require("./routes/exerciseCatRoute.js")
+const exercisedeltn=require("./routes/exerciseDelRoute.js")
 const nutAddMeal=require("./routes/nut_addMealRoute.js")
 const nutGetAllMeal=require("./routes/nut_GetAllMealRoute.js")
 const nutUpdtMeal=require("./routes/nut_updtMealRoute.js")
 const nutdelMeal=require("./routes/nut_DelMEalRoute.js")
 const nutMealTrk=require("./routes/nut_MealTrkRoute.js")
+const allUserReq=require("./routes/allUserReqRoute.js")
 
 
 //Required Dir
@@ -50,269 +54,48 @@ console.log(req.body)
 });
 
 
-//GET ALL USER
-app.get("/all_users",async(req,res)=>{
-    const   findAll = await allUsers.find()
-    if(findAll){
-        return res.status(200).json({findAll})
-    }
-})
 
-//WORKOUT MANAGEMENT :create-DONE
-app.post("/workOuts_cat/:id",async(req,res)=>{
-try{const idExist = await allUsers.findById(id)
-    const {id}=req.params
-    const {workOutName,exercise,duration}=req.body
-    if(!idExist){
-        return  res.status(400).json({msg:"USER ID REQUIRED FOR THIS REQUEST"})
-    }
-    const workOutDetails = new workOutModel({
-        userID:id,
-        workOutName,
-        exercise,
-        duration,
-        date:new Date()})
-    
-   await workOutDetails.save();
-    return res.status(200).json({
-        msg:"successful",
-        details:workOutDetails})
-    }catch(error){
-    return res.status(400).json({msg:error.message})}
-});
+//GET ALL USER REQUEST
+app.use("/API",allUserReq)
 
-
-//WORKOUT MANAGEMENT :update-DONE
-app.put("/workOuts_cat_update/:id",async(req,res)=>{
-    const {id}=req.params
-    const {workOutName,exercise,duration}=req.body
-    try{
-        const newworkOutDetails = await workOutModel.findOneAndUpdate(
-            {userID:id},{workOutName,exercise,duration},{new:true})
-            
-        if(!newworkOutDetails)
-            {return  res.status(400).json({msg:"USER ID REQUIRED FOR THIS REQUEST"})}
-
-        return res.status(200).json({
-            msg:"SUCCESSFUL",
-            newworkOutDetails})
-
-    }catch(error){
-        return res.status(400).json({msg:error.message})
-    }
-
-})
-//WORKOUT MANAGEMENT :delete-DONE
-app.delete("/workOuts_cat_delete/:id",authAccessTkn,async(req,res)=>{
-    try{
-        const {id}=req.params
-        const delworkOutDetails = await workOutModel.findOneAndDelete(
-            {userID:id})
-
-        if(!delworkOutDetails)
-            {return  res.status(400).json({msg:"USER ID REQUIRED FOR THIS REQUEST"})}
-
-        return res.status(200).json({
-            msg:"SUCCESSFUL"})
-
-    }catch(error){
-        return res.status(400).json({msg:error.message})
-    }
-
-})
-
-
-//EXERCISE MANAGEMENT: create-done
-app.post("/exercise_cat/:id",async(req,res)=>{
-    try{
-    const {id}=req.params
-    const {excerciseName,exerciseType,duration,burnedCalories}=req.body
-    const findId= await allUsers.findById(id)
-    if(!findId){
-        return  res.status(400).json("USER ID REQUIRED")}
-    const newExercise = new excerciseModel({
-        userID:id,
-        excerciseName,
-        exerciseType,
-        duration,
-        burnedCalories})
-    await   newExercise.save()
-
-    return  res.status(200).json({
-        msg:"SUCCESSFUL",
-        newExercise})
-    }catch(error){return res.status(400).json({msg:error.message})}
-    
-});
-
-//EXERCISE MANAGEMENT: update-DONE
-app.put("/exercise_update_cat/:id",authAccessTkn,async(req,res)=>{
-    try{
-    const {id}=req.params
-    const {excerciseName,exerciseType,duration,burnedCalories}=req.body
-    const findToUpdt = await excerciseModel.findOneAndUpdate(
-        {userID:id},
-        {excerciseName,
-        exerciseType,
-        duration,
-        burnedCalories},
-        {new:true})
-    if(!findToUpdt){
-        return res.status(400).json("USER ID NOT FOUND")
-    }
-    return res.status(200).json({
-        msg:"SUCCESSFUL",
-        findToUpdt})
-    }catch(error){return res.status(400).json({msg:error.message})}
-    
-})
-
-//EXERCISE MANAGEMENT: delete-done
-app.delete("/exercise_delete_cat/:id",authAccessTkn,async(req,res)=>{
-    try{
-    const {id}=req.params
-    const delExercisedata = await  excerciseModel.findOneAndDelete({userID:id})
-    if(!delExercisedata){
-        return res.status(400).json("USER ID REQUIRED")
-    }
-    return res.status(200).json({msg:"SUCCESSFUL"})
-
-    }catch(error){
-        return res.status(400).json({msg:error.message})}
-})
-
-//NUTRITIONAL MANAGEMENT PLAN: add_meal-done
-app.post("/nutrition_add_meal/:id",async(req,res)=>{
-    try{
-    const {id}= req.params
-    const{mealName,ingredient,calories,protein,carbs,fats}=req.body
-    const idExist = await allUsers.findById(id)
-    if(!idExist){
-        return res.status(400).json("USER ID REQUIRED")
-    }
-    const newMealplan = new userMealPlan({
-        userID:id,
-        mealName,
-        ingredient,
-        nutritionalInfo:{
-            calories:Number(calories),
-            protein:Number(protein),
-            carbs:Number(carbs),
-            fats:Number(fats)
-        },
-        mealDate: new Date()})
-    await newMealplan.save()
-    return res.status(200).json({
-        msg:"SUCCESSFUL",
-        newMealplan})
-    }catch(error){
-        return res.status(400).json({msg:error.message})
-    }
-    
-})
-
-//NUTRITIONAL MANAGEMENT PLAN: all_meal_day_wise-done
-app.get("/nutrition_all_meal_day_wise/:id/:date",async(req,res)=>{
-    try{    
-        const {id,date}=req.params
-        findID = await  userMealPlan.find({userID:id})
-        if(!findID ||findID.length===0 ){
-            return res.status(400).json("ID REQUIRED OR NO MEAL FOR THIS ID")
-        }
-        return res.status(400).json({
-            msg:"SUCCESSFUL",
-            findID})
-    }catch(error){return res.status(400).json({msg:error.message})}
-})
-
-//NUTRITIONAL MANAGEMENT PLAN: updatemeal-done
-app.put("/nutrition_updatemeal/:id",async (req,res) =>{
-    try{
-        const {id}= req.params
-        const{mealName,ingredient,calories,protein,carbs,fats}=req.body
-        const findIdMealUpdt = await userMealPlan.findOneAndUpdate({
-            userID:id},{
-            mealName,
-            ingredient,
-                calories:Number(calories),
-                protein:Number(protein),
-                carbs:Number(carbs),
-                fats:Number(fats)},
-                {new:true}
-            )
-        return res.status(200).json({
-            msg:"SUCCESSFUL",
-            findIdMealUpdt})
-    }catch(error){return res.status(400).json({msg:error.message})}
-})
-
-//NUTRITIONAL MANAGEMENT PLAN: deleteMeal-done
-app.delete("/nutrition_deleteMeal/:id",async(req,res)=>{
-    try{
-        const{id}=req.params
-    const delIdMeal = await userMealPlan.findOneAndDelete({userID:id})
-    if(!delIdMeal){
-        return res.status(400).json("ID REQUIRED FOR THIS ACTION")
-    }
-    return res.status(200).json({
-        msg:"SUCCESSFUL"})
-    }catch(error){
-        return res.status(400).json({msg:error.message})
-    }
-})
-
-//NUTRITIONAL MANAGEMENT PLAN: caloryTrack-done
-app.get("/nutrition_caloryTrack/:id/:date",async(req,res)=>{
-    try{
-        const{id,date}=req.params
-    const trkCalories = await userMealPlan.find({userID:id})
-    if(!trkCalories){
-        return res.status(400).json("ID REQUIRED FOR THIS ACTION")
-    }
-    if(!trkCalories.length===0){
-        return res.status(400).json({msg:"NO RECORDED MEAL FOR THIS USER"})
-    }
-
-    caloryArray=[]
-
-    trkCalories.forEach((userMeal) => {
-        if (userMeal.nutritionalInfo.calories) {
-            caloryArray.push(userMeal.nutritionalInfo.calories)}});
-        totalCalories = caloryArray.reduce((total,calories)=>total + calories,0)    
-        return res.status(200).json({
-            msg:"SUCCESSFUL",
-            totalCalories})}catch(error){return res.status(400).json({msg:error.message})}
-})
-
-//USER REGISTRATION
+//USER REGISTRATION-tested
 app.use("/API",regRouter);
 
-//USER LOGIN
+//USER LOGIN-tested
 app.use("/API",loginRouter)
 
-//USER UPDATE
+//USER UPDATE-tested
 app.use("/API",updateRouter)
 
-//WORKOUT MANAGEMENT :create
+//WORKOUT MANAGEMENT :create-TESTED
 app.use("/API",workOutCreatn)
 
-//WORKOUT MANAGEMENT :update
-app.use("/API",workUpdatn)
+//WORKOUT MANAGEMENT :update-TESTED
+app.use("/API",workOutUpdate)
 
-//EXERCISE MANAGEMENT: delete
-app.use("/API",workdeltn)
+//WORKOUT MANAGEMENT :delete-DONE-test
+app.use("/API",workOutDeltn)
 
-//NUTRITIONAL MANAGEMENT PLAN: add_meal
+//EXERCISE MANAGEMENT: create-done-test
+app.use("/API",exerciseCrtn)
+
+//EXERCISE MANAGEMENT :update-TEST
+app.use("/API",exerciseUpdatn)
+
+//EXERCISE MANAGEMENT: delete-TEST
+app.use("/API",exercisedeltn)
+
+//NUTRITIONAL MANAGEMENT PLAN: add_meal-TEST
 app.use("/API",nutAddMeal)
 
-//NUTRITIONAL MANAGEMENT PLAN: all_meal_day_wise
+//NUTRITIONAL MANAGEMENT PLAN: all_meal_day_wise-TEST
 app.use("/API",nutGetAllMeal)
 
-//NUTRITIONAL MANAGEMENT PLAN: updatemeal
+//NUTRITIONAL MANAGEMENT PLAN: updatemeal-TEST
 app.use("/API",nutUpdtMeal)
 
-//NUTRITIONAL MANAGEMENT PLAN: deleteMeal
+//NUTRITIONAL MANAGEMENT PLAN: deleteMeal-TEST
 app.use("/API",nutdelMeal)
 
 //NUTRITIONAL MANAGEMENT PLAN: caloryTrack
-app.use("API",nutMealTrk)
+app.use("/API",nutMealTrk)

@@ -1,5 +1,4 @@
 const nutTrackMealFxn = require("../controllers/nut_MealTrk")
-const {authAccessTkn,emailEntryVaildate,validateLogin} = require("../midleware/authValidation")
 const express = require("express")
 const { route } = require("./userRegRoute")
 const { Module } = require("module")

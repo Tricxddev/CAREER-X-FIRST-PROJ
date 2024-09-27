@@ -15,9 +15,12 @@ const nutUpdtMealFxn=async (req,res) =>{
                 fats:Number(fats)},
                 {new:true}
             )
+        if(!findIdMealUpdt || findIdMealUpdt===''){
+            return res.status(401).json({msg:"USER ID REQUIRED"})
+        }
         return res.status(200).json({
             msg:"SUCCESSFUL",
-            findIdMealUpdt})
+            findIdMealUpdt});
     }catch(error){return res.status(400).json({msg:error.message})}
 }
 module.exports=nutUpdtMealFxn

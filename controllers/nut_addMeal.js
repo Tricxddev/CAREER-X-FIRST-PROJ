@@ -5,8 +5,8 @@ const nutAddMealFxn= async(req,res)=>{
     const {id}= req.params
     const{mealName,ingredient,calories,protein,carbs,fats}=req.body
     const idExist = await allUsers.findById(id)
-    if(!idExist){
-        return res.status(400).json("USER ID REQUIRED")
+    if(!idExist || idExist===''){
+        return res.status(401).json("USER ID REQUIRED")
     }
     const newMealplan = new userMealPlan({
         userID:id,
