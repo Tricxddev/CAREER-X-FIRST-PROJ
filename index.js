@@ -59,43 +59,43 @@ console.log(req.body)
 //GET ALL USER REQUEST
 app.use("/API",allUserReq)
 
-//USER REGISTRATION-tested
+//USER REGISTRATION
 app.use("/API",regRouter);
 
-//USER LOGIN-tested
+//USER LOGIN
 app.use("/API",loginRouter)
 
-//USER UPDATE-tested
+//USER UPDATE
 app.use("/API",updateRouter)
 
-//WORKOUT MANAGEMENT :create-TESTED
+//WORKOUT MANAGEMENT :create
 app.use("/API",workOutCreatn)
 
-//WORKOUT MANAGEMENT :update-TESTED
+//WORKOUT MANAGEMENT :update
 app.use("/API",workOutUpdate)
 
-//WORKOUT MANAGEMENT :delete-DONE-test
+//WORKOUT MANAGEMENT :delete
 app.use("/API",workOutDeltn)
 
-//EXERCISE MANAGEMENT: create-done-test
+//EXERCISE MANAGEMENT: create
 app.use("/API",exerciseCrtn)
 
-//EXERCISE MANAGEMENT :update-TEST
+//EXERCISE MANAGEMENT :update
 app.use("/API",exerciseUpdatn)
 
-//EXERCISE MANAGEMENT: delete-TEST
+//EXERCISE MANAGEMENT: delete
 app.use("/API",exercisedeltn)
 
-//NUTRITIONAL MANAGEMENT PLAN: add_meal-TEST
+//NUTRITIONAL MANAGEMENT PLAN: add_meal
 app.use("/API",nutAddMeal)
 
-//NUTRITIONAL MANAGEMENT PLAN: all_meal_day_wise-TEST
+//NUTRITIONAL MANAGEMENT PLAN: all_meal_day_wise
 app.use("/API",nutGetAllMeal)
 
-//NUTRITIONAL MANAGEMENT PLAN: updatemeal-TEST
+//NUTRITIONAL MANAGEMENT PLAN: updatemeal
 app.use("/API",nutUpdtMeal)
 
-//NUTRITIONAL MANAGEMENT PLAN: deleteMeal-TEST
+//NUTRITIONAL MANAGEMENT PLAN: deleteMeal
 app.use("/API",nutdelMeal)
 
 //NUTRITIONAL MANAGEMENT PLAN: caloryTrack
